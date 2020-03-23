@@ -32,6 +32,8 @@ CREATE TABLE RolAccount(
 CREATE TABLE Option (
 	OptionId INT  GENERATED ALWAYS AS IDENTITY , 
 	Name VARCHAR(120),
+	isMenu INT,
+	URL VARCHAR(50) NULL,
 	CONSTRAINT PK_Option PRIMARY KEY (OptionId)
 );
 
@@ -102,38 +104,39 @@ INSERT INTO actiontype (name) VALUES ('Actualizar');
 INSERT INTO actiontype (name) VALUES ('Eliminar');
 
 
-INSERT INTO option (name) VALUES ('Artists');
-INSERT INTO option (name) VALUES ('Albums');
-INSERT INTO option (name) VALUES ('Tracks');
-INSERT INTO option (name) VALUES ('Reports');
-INSERT INTO option (name) VALUES ('ActionType');
-INSERT INTO option (name) VALUES ('Rol');
-INSERT INTO option (name) VALUES ('Option');
-INSERT INTO option (name) VALUES ('Account');
-
-INSERT INTO option (name) VALUES ('Action');
-INSERT INTO option (name) VALUES ('RolOption');
-INSERT INTO option (name) VALUES ('RolAccount');
+INSERT INTO option (name,isMenu) VALUES ('Artists', 1);
+INSERT INTO option (name,isMenu) VALUES ('Albums', 1);
+INSERT INTO option (name,isMenu) VALUES ('Tracks', 1);
+INSERT INTO option (name,isMenu) VALUES ('Reports', 1);
+INSERT INTO option (name,isMenu) VALUES ('ActionType', 0);
+INSERT INTO option (name,isMenu) VALUES ('Rol', 1);
+INSERT INTO option (name,isMenu) VALUES ('Option', 1);
+INSERT INTO option (name,isMenu) VALUES ('Account', 0);
+INSERT INTO option (name,isMenu) VALUES ('Employee', 1);
+INSERT INTO option (name,isMenu) VALUES ('Customer', 1);
+INSERT INTO option (name,isMenu) VALUES ('Action', 0);
+INSERT INTO option (name,isMenu) VALUES ('RolOption', 0);
+INSERT INTO option (name,isMenu) VALUES ('RolAccount', 0);
 
 
 INSERT INTO "action" (optionid ,actiontypeid)
 SELECT O.optionid, A.actiontypeid 
 FROM "option" o, actiontype a 
-WHERE O."name" NOT IN ('Action','RolOption','RolAccount','Reports')
+WHERE O."name" NOT IN ('Action','RolOption','RolAccount','Reports','Employee','Customer','Account')
 ORDER BY O."name";
 
 INSERT INTO "action" (optionid ,actiontypeid)
 SELECT O.optionid, A.actiontypeid 
 FROM "option" o, actiontype a 
 WHERE O."name" IN ('Action','RolOption','RolAccount')
-AND A."name" IN ('Insert','Delete')
+AND A."name" IN ('Insertar','Eliminar')
 ORDER BY O."name";
 
 INSERT INTO "action" (optionid ,actiontypeid)
 SELECT O.optionid, A.actiontypeid 
 FROM "option" o, actiontype a 
 WHERE O."name" IN ('Reports')
-AND A."name" IN ('Select')
+AND A."name" IN ('Seleccionar')
 ORDER BY O."name";
 
 INSERT INTO Rol (name) VALUES ('Administrador');
@@ -149,7 +152,7 @@ INSERT INTO roloption (rolid, optionid )
 SELECT r.rolid, o.optionid 
 FROM rol r, "option" o 
 WHERE r."name" <>'Administrador'
-AND o.name IN ('Artists','Albums','Tracks')
+AND o.name  IN ('Artists','Albums','Tracks')
 ORDER BY R.name, O."name";
 
 --Employee Admin
