@@ -58,8 +58,105 @@ CREATE TABLE RolOption (
 	FOREIGN KEY (RolId) REFERENCES Rol (RolId) ON DELETE NO ACTION ON UPDATE NO ACTION	
 );
 
---ALTER TABLE Customer ADD AccountId INT;
---ALTER TABLE Employee ADD AccountId INT;
+--Se agregan las columas para asociar customers y employee con los usuarios de acceso
+ALTER TABLE Customer ADD AccountId INT;
+ALTER TABLE Employee ADD AccountId INT;
 
---alter table Cosumer add foreign key AccountId references Account(AccountId);
---alter talbe Employee add foreign key AccountId references Account(AccountId);
+--Ingreso de cuentas de empleados
+INSERT INTO account (AccountUser, Password, isActive )
+SELECT email, 'pas123456', 1 FROM employee; 
+
+--Ingreso de cuentas de customers
+INSERT INTO account (AccountUser, Password, isActive )
+SELECT email, 'pas123456', 1 FROM customer;
+
+--Asociar las cuentas con los customer y employes
+--actualizar empleados
+UPDATE employee
+SET AccountId = A.AccountId
+FROM (
+	SELECT A.AccountId, E.employeeId
+	FROM Employee E 
+		INNER JOIN Account  A ON (E.Email = A.AccountUser)
+) A 
+WHERE employee.employeeid = A.employeeid;
+
+--actualiza los customers
+UPDATE customer 
+SET AccountId = A.AccountId
+FROM (
+	SELECT A.AccountId, C.customerId
+	FROM customer C 
+		INNER JOIN Account  A ON (C.Email = A.AccountUser)
+) A 
+WHERE customer.customerId = A.customerId;
+
+
+--se agrega la llave foranea a las cuentas de customer y employee
+--ALTER TABLE Cosumer ADD FOREIGN KEY AccountId REFERENCES Account(AccountId);
+--ALTER TABLE Employee ADD FOREIGN KEY AccountId REFERENCES Account(AccountId);
+
+INSERT INTO actiontype (name) VALUES ('Select');
+INSERT INTO actiontype (name) VALUES ('Insert');
+INSERT INTO actiontype (name) VALUES ('Update');
+INSERT INTO actiontype (name) VALUES ('Delete');
+
+
+INSERT INTO option (name) VALUES ('Artists');
+INSERT INTO option (name) VALUES ('Albums');
+INSERT INTO option (name) VALUES ('Tracks');
+INSERT INTO option (name) VALUES ('Reports');
+INSERT INTO option (name) VALUES ('ActionType');
+INSERT INTO option (name) VALUES ('Rol');
+INSERT INTO option (name) VALUES ('Option');
+INSERT INTO option (name) VALUES ('Account');
+
+INSERT INTO option (name) VALUES ('Action');
+INSERT INTO option (name) VALUES ('RolOption');
+INSERT INTO option (name) VALUES ('RolAccount');
+
+
+INSERT INTO "action" (optionid ,actiontypeid)
+SELECT O.optionid, A.actiontypeid 
+FROM "option" o, actiontype a 
+WHERE O."name" NOT IN ('Action','RolOption','RolAccount','Reports')
+ORDER BY O."name";
+
+INSERT INTO "action" (optionid ,actiontypeid)
+SELECT O.optionid, A.actiontypeid 
+FROM "option" o, actiontype a 
+WHERE O."name" IN ('Action','RolOption','RolAccount')
+AND A."name" IN ('Insert','Delete')
+ORDER BY O."name";
+
+INSERT INTO "action" (optionid ,actiontypeid)
+SELECT O.optionid, A.actiontypeid 
+FROM "option" o, actiontype a 
+WHERE O."name" IN ('Reports')
+AND A."name" IN ('Select')
+ORDER BY O."name";
+
+INSERT INTO Rol (name) VALUES ('Administrador');
+INSERT INTO Rol (name) VALUES ('Usuario');
+INSERT INTO Rol (name) VALUES ('Premium');
+
+INSERT INTO roloption (rolid, optionid )
+SELECT r.rolid, o.optionid 
+FROM rol r, "option" o 
+WHERE r."name" ='Administrador';
+
+INSERT INTO roloption (rolid, optionid )
+SELECT r.rolid, o.optionid 
+FROM rol r, "option" o 
+WHERE r."name" <>'Administrador'
+AND o.name NOT IN ('Artists','Albums','Tracks')
+ORDER BY R.name, O."name";
+
+--Employee Admin
+INSERT INTO rolaccount (rolid,accountid) VALUES (1, 1);
+
+--Customer usuario
+INSERT INTO rolaccount (rolid,accountid)
+SELECT 2, A.AccountId
+FROM customer C 
+	INNER JOIN Account  A ON (C.Email = A.AccountUser);
