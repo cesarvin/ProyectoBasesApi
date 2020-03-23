@@ -149,7 +149,7 @@ INSERT INTO roloption (rolid, optionid )
 SELECT r.rolid, o.optionid 
 FROM rol r, "option" o 
 WHERE r."name" <>'Administrador'
-AND o.name NOT IN ('Artists','Albums','Tracks')
+AND o.name IN ('Artists','Albums','Tracks')
 ORDER BY R.name, O."name";
 
 --Employee Admin
