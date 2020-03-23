@@ -13,7 +13,7 @@ const getLogin = async (req, res) => {
     //console.log(login);
     if (login.rowCount != 0 && login.rows[0].login == 1){
       menu.login = 1;
-      menu.menu = await pool.query('SELECT A.accountid,  \
+      const getMenu = await pool.query('SELECT A.accountid,  \
                                         O.optionid,  \
                                         O.name, \
                                         O.ismenu, \
@@ -44,7 +44,7 @@ const getLogin = async (req, res) => {
                                             INNER JOIN Option O ON RO.optionid  = O.optionid  \
                                       WHERE A.accountid  = 1');
       
-      
+      menu.menu = getMenu.rows;
     } else {
       throw 'Usuario o contraseña incorrectos'
     }
