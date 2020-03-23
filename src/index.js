@@ -23,5 +23,11 @@ app.use(require('./routes/seguridad/rolOption'));
 //rol account
 app.use(require('./routes/seguridad/rolAccount'));
 
+//action
+app.use(require('./routes/seguridad/action'));
+
+//account
+app.use(require('./routes/seguridad/account'));
+
 app.listen(3000);
 console.log('listening localhost:3000');

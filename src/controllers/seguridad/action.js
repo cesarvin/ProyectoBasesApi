@@ -1,14 +1,14 @@
-//Consulta las opciones de un rol
+//Consulta las acciones
 const getAction= async (req, res) => {
   try{
     
-    const id = req.params.id; 
+    const optionId = req.params.optionId; 
     
     const response = await pool.query('SELECT A.ActionId, O.name AS Option, AT.name AS ActionType \
                                         FROM "action" A \
                                           INNER JOIN "option"  O ON (A.OptionId = O.OptionId) \
                                           INNER JOIN actiontype AT ON (A.ActionTypeId = AT.ActionTypeId) \
-                                        WHERE O.OptionId = $1', [id]);
+                                        WHERE O.OptionId = $1', [optionId]);
 
     res.json(response.rows);
   }catch(e){
@@ -16,7 +16,7 @@ const getAction= async (req, res) => {
   }
 }
 
-//agrega una Rol, y retorna la tupla creada.
+//agrega una accion a una opción
 const setAction = async (req, res) => {
   try{
 
@@ -39,11 +39,12 @@ const setAction = async (req, res) => {
 
 }
 
-//se elimina el Rol
+//se elimina la acción de una opción
 const delAction = async (req, res) => {
   try{
-    const id = req.params.id; 
-    const response = await pool.query('DELETE FROM action A WHERE A.ActionId = $1', [ id ]);
+    const optionId = req.params.optionId;
+    const actionId = req.params.actionId; 
+    const response = await pool.query('DELETE FROM action A WHERE A.OptionId = $2 AND A.ActionId = $2', [ optionId, actionId ]);
     res.send('Se elimino correctamente');
 
   }catch(e){
