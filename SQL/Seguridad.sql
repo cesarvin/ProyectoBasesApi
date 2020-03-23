@@ -96,10 +96,10 @@ WHERE customer.customerId = A.customerId;
 --ALTER TABLE Cosumer ADD FOREIGN KEY AccountId REFERENCES Account(AccountId);
 --ALTER TABLE Employee ADD FOREIGN KEY AccountId REFERENCES Account(AccountId);
 
-INSERT INTO actiontype (name) VALUES ('Select');
-INSERT INTO actiontype (name) VALUES ('Insert');
-INSERT INTO actiontype (name) VALUES ('Update');
-INSERT INTO actiontype (name) VALUES ('Delete');
+INSERT INTO actiontype (name) VALUES ('Seleccionar');
+INSERT INTO actiontype (name) VALUES ('Insertar');
+INSERT INTO actiontype (name) VALUES ('Actualizar');
+INSERT INTO actiontype (name) VALUES ('Eliminar');
 
 
 INSERT INTO option (name) VALUES ('Artists');
