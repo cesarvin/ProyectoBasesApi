@@ -29,5 +29,8 @@ app.use(require('./routes/seguridad/action'));
 //account
 app.use(require('./routes/seguridad/account'));
 
+//artist
+app.use(require('./routes/app/artist'));
+
 app.listen(3000);
 console.log('listening localhost:3000');
