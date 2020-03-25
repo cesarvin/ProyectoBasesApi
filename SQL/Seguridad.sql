@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS Action;
-DROP TABLE IF EXISTS ActionType;
 DROP TABLE IF EXISTS RolOption;
 DROP TABLE IF EXISTS Option;
 DROP TABLE IF EXISTS RolAccount;
@@ -36,7 +35,7 @@ CREATE TABLE Option (
 	URL VARCHAR(50) NULL,
 	CONSTRAINT PK_Option PRIMARY KEY (OptionId)
 );
-
+/*
 CREATE TABLE ActionType(
 	ActionTypeId INT GENERATED ALWAYS AS IDENTITY ,
 	Name VARCHAR(50),
@@ -50,14 +49,21 @@ CREATE TABLE Action (
 	CONSTRAINT PK_Action PRIMARY KEY(ActionId),
 	FOREIGN KEY (OptionId) REFERENCES Option (OptionId) ON DELETE NO ACTION ON UPDATE NO ACTION,
 	FOREIGN KEY (ActionTypeId) REFERENCES ActionType (ActionTypeId) ON DELETE NO ACTION ON UPDATE NO ACTION
+);*/
+CREATE TABLE Action (
+	ActionId INT  GENERATED ALWAYS AS IDENTITY ,
+	Name VARCHAR(50),
+	CONSTRAINT PK_Action PRIMARY KEY(ActionId)
 );
 
 CREATE TABLE RolOption (
-	OptionId INT NOT NULL, 
 	RolId INT NOT NULL,
-	CONSTRAINT PK_RolOption PRIMARY KEY(OptionId, RolId),
+  	OptionId INT NOT NULL, 
+	ActionId INT,
+	CONSTRAINT PK_RolOption PRIMARY KEY(OptionId, RolId, ActionId),
 	FOREIGN KEY (OptionId) REFERENCES Option (OptionId) ON DELETE NO ACTION ON UPDATE NO ACTION,
-	FOREIGN KEY (RolId) REFERENCES Rol (RolId) ON DELETE NO ACTION ON UPDATE NO ACTION	
+	FOREIGN KEY (RolId) REFERENCES Rol (RolId) ON DELETE NO ACTION ON UPDATE NO ACTION,
+	FOREIGN KEY (ActionId) REFERENCES Action (ActionId) ON DELETE NO ACTION ON UPDATE NO ACTION	
 );
 
 --Se agregan las columas para asociar customers y employee con los usuarios de acceso
@@ -98,17 +104,17 @@ WHERE customer.customerId = A.customerId;
 --ALTER TABLE Cosumer ADD FOREIGN KEY AccountId REFERENCES Account(AccountId);
 --ALTER TABLE Employee ADD FOREIGN KEY AccountId REFERENCES Account(AccountId);
 
-INSERT INTO actiontype (name) VALUES ('Seleccionar');
-INSERT INTO actiontype (name) VALUES ('Insertar');
-INSERT INTO actiontype (name) VALUES ('Actualizar');
-INSERT INTO actiontype (name) VALUES ('Eliminar');
-
+INSERT INTO action (name) VALUES ('Seleccionar');
+INSERT INTO action (name) VALUES ('Insertar');
+INSERT INTO action (name) VALUES ('Actualizar');
+INSERT INTO action (name) VALUES ('Eliminar');
+INSERT INTO ACTION (name) VALUES ('Inactivar');
 
 INSERT INTO option (name,isMenu) VALUES ('Artists', 1);
 INSERT INTO option (name,isMenu) VALUES ('Albums', 1);
 INSERT INTO option (name,isMenu) VALUES ('Tracks', 1);
+INSERT INTO option (name,isMenu) VALUES ('InactiveTracks', 0);
 INSERT INTO option (name,isMenu) VALUES ('Reports', 1);
-INSERT INTO option (name,isMenu) VALUES ('ActionType', 0);
 INSERT INTO option (name,isMenu) VALUES ('Rol', 1);
 INSERT INTO option (name,isMenu) VALUES ('Option', 1);
 INSERT INTO option (name,isMenu) VALUES ('Account', 0);
@@ -118,7 +124,7 @@ INSERT INTO option (name,isMenu) VALUES ('Action', 0);
 INSERT INTO option (name,isMenu) VALUES ('RolOption', 0);
 INSERT INTO option (name,isMenu) VALUES ('RolAccount', 0);
 
-
+/*
 INSERT INTO "action" (optionid ,actiontypeid)
 SELECT O.optionid, A.actiontypeid 
 FROM "option" o, actiontype a 
@@ -138,22 +144,42 @@ FROM "option" o, actiontype a
 WHERE O."name" IN ('Reports')
 AND A."name" IN ('Seleccionar')
 ORDER BY O."name";
+*/
 
 INSERT INTO Rol (name) VALUES ('Administrador');
 INSERT INTO Rol (name) VALUES ('Usuario');
 INSERT INTO Rol (name) VALUES ('Premium');
 
-INSERT INTO roloption (rolid, optionid )
-SELECT r.rolid, o.optionid 
-FROM rol r, "option" o 
-WHERE r."name" ='Administrador';
+/*INSERT INTO roloption (rolid, optionid )
+SELECT r.rolid, o.optionid, a.actionid 
+FROM rol r, "option" o, "action" a 
+WHERE r."name" ='Administrador';*/
 
-INSERT INTO roloption (rolid, optionid )
-SELECT r.rolid, o.optionid 
-FROM rol r, "option" o 
+--permiso para todos los demas usuarios
+INSERT INTO roloption (rolid, optionid, actionid)
+SELECT r.rolid, o.optionid, actionid 
+FROM rol r, "option" o, "action" a 
 WHERE r."name" <>'Administrador'
 AND o.name  IN ('Artists','Albums','Tracks')
-ORDER BY R.name, O."name";
+AND a."name" IN ('Seleccionar')
+ORDER BY r.rolid, o.optionid, actionid ;
+
+--administrador 
+INSERT INTO roloption (rolid, optionid, actionid)
+SELECT r.rolid, o.optionid, actionid 
+FROM rol r, "option" o, "action" a 
+WHERE r."name" = 'Administrador'
+AND o.name  IN ('Reports')
+AND a."name" IN ('Seleccionar')
+ORDER BY r.rolid, o.optionid, actionid ;
+
+INSERT INTO roloption (rolid, optionid, actionid)
+SELECT r.rolid, o.optionid, actionid 
+FROM rol r, "option" o, "action" a 
+WHERE r."name" = 'Administrador'
+AND o.name  IN ('Artists','Albums','Tracks', 'Rol', 'Option', 'Account', 'Employee', 'Customer', 'Action', 'RolOption', 'InactiveTracks')
+AND a."name" IN ('Seleccionar', 'Insertar', 'Actualizar', 'Eliminar')
+ORDER BY r.rolid, o.optionid, actionid ;
 
 --Employee Admin
 INSERT INTO rolaccount (rolid,accountid) VALUES (1, 1);
