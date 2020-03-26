@@ -181,11 +181,15 @@ const getReport = async (req, res) => {
       res.json(response.rows);
     }
     if (id==5){
-      const response = await pool.query('SELECT a.name, count(a.ArtistId) conteo \
-                                          FROM (Track t NATURAL JOIN Album al) NATURAL JOIN Artist a \
-                                          GROUP BY a.ArtistId \
-                                          ORDER BY count(a.ArtistId) DESC \
-                                            LIMIT 5  ');
+      const response = await pool.query(' SELECT ListaA.artistid, Artist.name, ListaA.cuenta \
+      FROM ( \
+        SELECT artistid, count(trackid) AS Cuenta \
+        FROM track INNER JOIN album  ON Album.albumid = Track.albumid  \
+        GROUP BY artistid \
+      ) AS ListaA \
+        INNER JOIN  artist ON artist.artistid = ListaA.artistid \
+      ORDER BY ListaA.Cuenta DESC \
+      LIMIT 5  ');
 
       res.json(response.rows);
     }
