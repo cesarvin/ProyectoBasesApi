@@ -95,9 +95,7 @@ const setAlbum = async (req, res) => {
       res.json('ok');
     }else {
       const insert = await pool.query('INSERT INTO Album (Title, artistId) VALUES ($1, $2)', [name ,artistid] );
-      const response = await pool.query('SELECT * FROM Album WHERE title = $1 and artistId= $2 ORDER BY ar.name, Title', [name, artistid]);
-    
-      res.json(response.rows);
+      res.json('ok');
     }
   }catch(e){
     console.log(e);

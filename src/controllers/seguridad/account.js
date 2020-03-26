@@ -5,7 +5,7 @@ const getLogin = async (req, res) => {
     const user = req.body.user;
     const pass = req.body.pass; 
     var menu = {};
-    
+     
     const login = await pool.query('SELECT 1 AS Login,  accountid AS accountid \
                                        FROM account a \
                                        WHERE a.accountuser = $1 \
@@ -148,11 +148,16 @@ const getReport = async (req, res) => {
       res.json(response.rows);
     }
     if (id==2){
-      const response = await pool.query('SELECT g.Name, count(g.name) AS conteo \
-                                          FROM Genre g NATURAL JOIN Track t \
-                                          GROUP BY g.Name \
-                                          ORDER BY count(g.name) DESC \
-                                          LIMIT 5');
+      const response = await pool.query('SELECT Lista.genreid, Genre.name, Lista.Cuenta \
+      FROM( \
+        Select genreid,  count(trackid) As Cuenta \
+        from track \
+        group by genreid \
+        ORDER by genreid \
+      ) as Lista \
+        inner join Genre on Genre.genreid =Lista.genreid \
+      ORDER BY Cuenta DESC \
+      LIMIT 5 ');
 
       res.json(response.rows);
     }
@@ -163,20 +168,20 @@ const getReport = async (req, res) => {
           INNER JOIN Track ON Playlisttrack.trackid = Track.trackid \
           GROUP BY Playlisttrack.playlistid \
           ORDER BY Playlisttrack.playlistid \
-         ) AS PL INNER JOIN Playlist ON PL.playlistid = Playlist.playlistid;');
+         ) AS PL INNER JOIN Playlist ON PL.playlistid = Playlist.playlistid; ');
 
       res.json(response.rows);
     }
     if (id==4){
       const response = await pool.query('SELECT a.Name, t.Milliseconds \
                                                 FROM (Track t NATURAL JOIN Album al) NATURAL JOIN Artist a \
-                                                ORDER BY t.Miliseconds\
+                                                ORDER BY t.Milliseconds DESC \
                                                 LIMIT 5');
 
       res.json(response.rows);
     }
     if (id==5){
-      const response = await pool.query('SELECT a.Name, count(a.ArtistId) \
+      const response = await pool.query('SELECT a.name, count(a.ArtistId) conteo \
                                           FROM (Track t NATURAL JOIN Album al) NATURAL JOIN Artist a \
                                           GROUP BY a.ArtistId \
                                           ORDER BY count(a.ArtistId) DESC \
@@ -210,11 +215,11 @@ const getReport = async (req, res) => {
       const response = await pool.query('SELECT ListaC.artistid, Artist.name, ListaC.Cuenta \
       FROM( \
         SELECT ListaG.artistid, COUNT(ListaG.Generos) AS Cuenta \
-        FROM( \
-          SELECT DISTINCT Album.artistid, Track.genreid AS Generos \
-          FROM Track \
-            INNER JOIN Album ON Album.albumid = Track.albumid \
-          ) AS ListaG \
+       FROM( \
+         SELECT DISTINCT Album.artistid, Track.genreid AS Generos \
+         FROM Track \
+           INNER JOIN Album ON Album.albumid = Track.albumid \
+         ) AS ListaG \
         GROUP BY ListaG.artistid \
         ) AS ListaC \
           INNER JOIN Artist ON Artist.artistid = ListaC.artistid \
