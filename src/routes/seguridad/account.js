@@ -1,10 +1,19 @@
 const { Router } = require('express'); 
 const router = Router(); 
 
-const { getLogin } = require('../../controllers/seguridad/account');
+const { getLogin, getSingin, getAcccounts, getReport} = require('../../controllers/seguridad/account');
 
 //consulta
-router.put('/login', getLogin);
+router.post('/login', getLogin);
+
+//consulta
+router.post('/singin', getSingin);
+
+//consulta
+router.get('/account', getAcccounts);
+
+
+router.get('/report/:id', getReport);
 
 //exporta las rutas
 module.exports = router; 

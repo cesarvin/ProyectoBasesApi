@@ -20,21 +20,16 @@ const getRolAccount= async (req, res) => {
 const setRolAccount = async (req, res) => {
   try{
 
-    const { rolId, accountId } = req.body; 
+    const { rolid, accountid } = req.body; 
     
     //inserta
-    const insert = await pool.query('INSERT INTO RolAccount (rolId, accountId) VALUES ($1, $2)', [rolId, accountId] );
+    const insert = await pool.query('INSERT INTO RolAccount (rolId, accountId) VALUES ($1, $2)', [rolid, accountid] );
     
-    //retorna ultimo valor insertado
-    const response = await pool.query('SELECT RA.accountId, RA.rolId, R.name AS Rol \
-                                      FROM rolaccount RA \
-                                          INNER JOIN rol R ON (RA.rolId = R.rolId) \
-                                          INNER JOIN Account A ON (RA.accountId = A.accountId) \
-                                      WHERE RA.accountId = $1 AND RA.AccountId = $2', [ rolId, accountId]);
-    res.json(response.rows);
+    res.json('ok');
     
   }catch(e){
     console.log(e);
+    res.json('ya existe');
   }
 
 }
@@ -45,7 +40,7 @@ const delRolAccount = async (req, res) => {
     
     const rolId = req.params.rolId;
     const accountId = req.params.accountId; 
-    const response = await pool.query('DELETE FROM rolaccount RO WHERE RA.rolId = $1 AND RA.AccountId = $2', [ rolId, accountId]);
+    const response = await pool.query('DELETE FROM rolaccount WHERE rolId = $1 AND AccountId = $2', [ rolId, accountId]);
     res.send('Se elimino correctamente');
 
   }catch(e){

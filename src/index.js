@@ -44,8 +44,11 @@ app.use(require('./routes/seguridad/account'));
 //artist
 app.use(require('./routes/app/artist'));
 
-//artist
+//album
 app.use(require('./routes/app/album'));
+
+//track
+app.use(require('./routes/app/track'));
 
 app.use(function (error, request, response, next) {
       console.error(error.stack);

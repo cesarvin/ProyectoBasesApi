@@ -1,11 +1,13 @@
 const { Router } = require('express'); 
 const router = Router(); 
 
-const { getAlbum, setAlbum, delAlbum , getAlbumByArtist} = require('../../controllers/app/album');
+const { getAlbum, setAlbum, delAlbum , getAlbumByArtist, getAlbumById, getAlbumTracks} = require('../../controllers/app/album');
 
 //consulta
 router.get('/album', getAlbum);
 router.get('/album/:name', getAlbum);
+router.get('/albumbyid/:id', getAlbumById);
+router.get('/albumtracks/:id', getAlbumTracks);
 router.get('/artist/album/:artistId', getAlbumByArtist);
 router.get('/artist/album/:artistId/:name', getAlbumByArtist);
 

@@ -177,7 +177,7 @@ INSERT INTO roloption (rolid, optionid, actionid)
 SELECT r.rolid, o.optionid, actionid 
 FROM rol r, "option" o, "action" a 
 WHERE r."name" = 'Administrador'
-AND o.name  IN ('Artists','Albums','Tracks', 'Rol', 'Option', 'Account', 'Employee', 'Customer', 'Action', 'RolOption', 'InactiveTracks')
+AND o.name  IN ('Artists','Albums','Tracks', 'Rol', 'Option', 'Account', 'Employee', 'Customer', 'Action', 'RolOption', 'InactiveTracks', 'RolAccount')
 AND a."name" IN ('Seleccionar', 'Insertar', 'Actualizar', 'Eliminar')
 ORDER BY r.rolid, o.optionid, actionid ;
 
